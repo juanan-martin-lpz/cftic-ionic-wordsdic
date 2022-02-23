@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
+use Text::Unaccent::PurePerl;
+
+use open ':locale';
 
 # Definimos los ficheros necesarios
 my $filename = './es_ANY.dic';
@@ -24,11 +27,16 @@ while(<FH>){
    my $word = $words[0];
    # eliminamos espacios a los lados...
    $word =~ s/^\s+|\s+$//g;
-   # ...y las tildes
-   $word =~ tr/áéíóúüçÁÉÍÓÚÜÇ/aeiouucAEIOUUC/;
+   # ...y las tildes   
+   # $word =~ tr/áéíóúüçÁÉÍÓÚÜÇ/aeiouucAEIOUUC/;
+
+   $word = unac_string($word);
+   
+   print $word;
 
    # Nos quedamos con las de cinco letras. La primera linea no nos sirve
    if ((length($word) eq 5) && ($first eq 1)) {
+
       # La primera fila no lleva coma, las siguientes si (eso me pasa por no usar JSON directamente)
       if ($coma eq 0) {
          print FHO '"' . uc $word . '"' . "\n";
