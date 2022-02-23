@@ -31,11 +31,11 @@ while(<FH>){
    if ((length($word) eq 5) && ($first eq 1)) {
       # La primera fila no lleva coma, las siguientes si (eso me pasa por no usar JSON directamente)
       if ($coma eq 0) {
-         print FHO "\'" . uc $word . "\'" . "\n";
+         print FHO "'" . uc $word . "'" . "\n";
          $coma = 1;
       }
       else {
-         print FHO ",\'" . uc $word . "\'" . "\n";
+         print FHO ",'" . uc $word . "'" . "\n";
       }
       
    }
