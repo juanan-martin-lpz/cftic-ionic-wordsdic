@@ -2,6 +2,8 @@
 use warnings;
 use strict;
 use Text::Unaccent::PurePerl;
+use List::MoreUtils qw(uniq);
+use JSON;
 
 use open ':locale';
 
@@ -16,7 +18,9 @@ open(FHO, '>', $outfile) or die $!;
 my $first = 0;
 my $coma = 0;
 
-print FHO "[";
+#print FHO "[";
+
+my @wordsArray = qw();
 
 # Recorremos el diccionario...
 while(<FH>){
@@ -28,31 +32,23 @@ while(<FH>){
    # eliminamos espacios a los lados...
    $word =~ s/^\s+|\s+$//g;
    # ...y las tildes   
-   # $word =~ tr/áéíóúüçÁÉÍÓÚÜÇ/aeiouucAEIOUUC/;
-
    $word = unac_string($word);
-   
-   print $word;
 
-   # Nos quedamos con las de cinco letras. La primera linea no nos sirve
-   if ((length($word) eq 5) && ($first eq 1)) {
-
-      # La primera fila no lleva coma, las siguientes si (eso me pasa por no usar JSON directamente)
-      if ($coma eq 0) {
-         print FHO '"' . uc $word . '"' . "\n";
-         $coma = 1;
-      }
-      else {
-         print FHO ',"' . uc $word . '"' . "\n";
-      }
-      
+   if (($first eq 1) && (length($word) eq 5)) {
+      push(@wordsArray, uc $word);
    }
 
    $first = 1;
-
 }
 
-print FHO "]";
+
+my @cleanwords = uniq @wordsArray ;
+
+my $json = encode_json(\@cleanwords);
+
+print FHO $json;
+
+#print FHO "]";
 
 # Cerramos ficheros
 close(FH);
